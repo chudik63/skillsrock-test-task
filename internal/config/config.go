@@ -34,9 +34,10 @@ type (
 	}
 
 	Config struct {
-		HTTP      HTTPConfig
-		RateLimit RateLimiterConfig
-		Postgres  PostgresConfig
+		HTTP           HTTPConfig
+		RateLimit      RateLimiterConfig
+		Postgres       PostgresConfig
+		MigrationsPath string `env:"MIGRATIONS_PATH"`
 	}
 )
 
