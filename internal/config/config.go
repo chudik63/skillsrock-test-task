@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
@@ -14,10 +13,7 @@ var (
 
 type (
 	HTTPConfig struct {
-		Port               string        `env:"HTTP_PORT"`
-		ReadTimeout        time.Duration `env:"READ_TIMEOUT"`
-		WriteTimeout       time.Duration `env:"WRITE_TIMEOUT"`
-		MaxHeaderMegabytes int           `env:"MAX_HEADER_MBYTES"`
+		Port string `env:"HTTP_PORT"`
 	}
 
 	PostgresConfig struct {
