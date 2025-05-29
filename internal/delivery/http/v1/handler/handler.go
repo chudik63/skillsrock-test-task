@@ -66,6 +66,8 @@ func (h *Handler) CreateTask(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: "Uknown error occured while creating the task"})
 	}
 
+	h.logger.Info(ctx.Context(), "Task created", zap.Uint64("id", res.ID))
+
 	return ctx.Status(fiber.StatusCreated).JSON(res)
 }
 
@@ -80,26 +82,26 @@ func (h *Handler) CreateTask(ctx *fiber.Ctx) error {
 // @Failure      404  {object}  ErrorResponse  "Task not found"
 // @Failure      500  {object}  ErrorResponse  "Unknown error occurred"
 // @Router       /tasks/{id} [get]
-func (h *Handler) GetTaskByID(c *fiber.Ctx) error {
+func (h *Handler) GetTaskByID(ctx *fiber.Ctx) error {
 	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 
-	taskID := c.Params("id")
+	taskID := ctx.Params("id")
 
 	res, err := h.service.GetTaskByID(ctxWithTimeout, taskID)
 	if err != nil {
 		switch {
 		case errors.Is(err, models.ErrFailedToParseID):
-			return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
+			return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
 		case errors.Is(err, models.ErrNotFound):
-			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{Error: err.Error()})
+			return ctx.Status(fiber.StatusNotFound).JSON(ErrorResponse{Error: err.Error()})
 		default:
-			h.logger.Error(c.Context(), "Unknown error occurred while getting the task", zap.Error(err))
-			return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: "Unknown error occurred while getting the task"})
+			h.logger.Error(ctx.Context(), "Unknown error occurred while getting the task", zap.Error(err))
+			return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: "Unknown error occurred while getting the task"})
 		}
 	}
 
-	return c.Status(fiber.StatusOK).JSON(res)
+	return ctx.Status(fiber.StatusOK).JSON(res)
 }
 
 // UpdateTask
@@ -115,31 +117,33 @@ func (h *Handler) GetTaskByID(c *fiber.Ctx) error {
 // @Failure      404   {object}  ErrorResponse  "Task not found"
 // @Failure      500   {object}  ErrorResponse  "Unknown error occurred"
 // @Router       /tasks/{id} [put]
-func (h *Handler) UpdateTask(c *fiber.Ctx) error {
+func (h *Handler) UpdateTask(ctx *fiber.Ctx) error {
 	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 
-	taskID := c.Params("id")
+	taskID := ctx.Params("id")
 
 	var task dto.UpdateTaskRequest
-	if err := c.BodyParser(&task); err != nil {
-		h.logger.Error(c.Context(), "Invalid request body", zap.Error(err))
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: "Invalid request body"})
+	if err := ctx.BodyParser(&task); err != nil {
+		h.logger.Error(ctx.Context(), "Invalid request body", zap.Error(err))
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: "Invalid request body"})
 	}
 
 	if err := h.service.UpdateTask(ctxWithTimeout, taskID, &task); err != nil {
 		switch {
 		case errors.Is(err, models.ErrFailedToParseID):
-			return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
+			return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
 		case errors.Is(err, models.ErrNotFound):
-			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{Error: err.Error()})
+			return ctx.Status(fiber.StatusNotFound).JSON(ErrorResponse{Error: err.Error()})
 		default:
-			h.logger.Error(c.Context(), "Unknown error occurred while updating the task", zap.Error(err))
-			return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: "Unknown error occurred while updating the task"})
+			h.logger.Error(ctx.Context(), "Unknown error occurred while updating the task", zap.Error(err))
+			return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: "Unknown error occurred while updating the task"})
 		}
 	}
 
-	return c.SendStatus(fiber.StatusOK)
+	h.logger.Info(ctx.Context(), "Task updated", zap.Uint64("id", task.ID))
+
+	return ctx.SendStatus(fiber.StatusOK)
 }
 
 // DeleteTask
@@ -153,25 +157,27 @@ func (h *Handler) UpdateTask(c *fiber.Ctx) error {
 // @Failure      404  {object}  ErrorResponse  "Task not found"
 // @Failure      500  {object}  ErrorResponse  "Unknown error occurred"
 // @Router       /tasks/{id} [delete]
-func (h *Handler) DeleteTask(c *fiber.Ctx) error {
+func (h *Handler) DeleteTask(ctx *fiber.Ctx) error {
 	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 
-	taskID := c.Params("id")
+	taskID := ctx.Params("id")
 
 	if err := h.service.DeleteTask(ctxWithTimeout, taskID); err != nil {
 		switch {
 		case errors.Is(err, models.ErrFailedToParseID):
-			return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
+			return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
 		case errors.Is(err, models.ErrNotFound):
-			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{Error: err.Error()})
+			return ctx.Status(fiber.StatusNotFound).JSON(ErrorResponse{Error: err.Error()})
 		default:
-			h.logger.Error(c.Context(), "Unknown error occurred while deleting the task", zap.Error(err))
-			return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: "Unknown error occurred while deleting the task"})
+			h.logger.Error(ctx.Context(), "Unknown error occurred while deleting the task", zap.Error(err))
+			return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: "Unknown error occurred while deleting the task"})
 		}
 	}
 
-	return c.SendStatus(fiber.StatusOK)
+	h.logger.Info(ctx.Context(), "Task deleted", zap.String("id", taskID))
+
+	return ctx.SendStatus(fiber.StatusOK)
 }
 
 // GetTasks
@@ -186,25 +192,25 @@ func (h *Handler) DeleteTask(c *fiber.Ctx) error {
 // @Failure      404    {object}  ErrorResponse  "No tasks found"
 // @Failure      500    {object}  ErrorResponse  "Unknown error occurred"
 // @Router       /tasks [get]
-func (h *Handler) GetTasks(c *fiber.Ctx) error {
+func (h *Handler) GetTasks(ctx *fiber.Ctx) error {
 	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 
-	page := c.Query("page")
-	limit := c.Query("limit")
+	page := ctx.Query("page")
+	limit := ctx.Query("limit")
 
 	res, err := h.service.GetTasks(ctxWithTimeout, page, limit)
 	if err != nil {
 		switch {
 		case errors.Is(err, models.ErrFailedToParsePage), errors.Is(err, models.ErrFailedToParseLimit):
-			return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
+			return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
 		case errors.Is(err, models.ErrNotFound):
-			return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{Error: err.Error()})
+			return ctx.Status(fiber.StatusNotFound).JSON(ErrorResponse{Error: err.Error()})
 		default:
-			h.logger.Error(c.Context(), "Unknown error occurred while listing the tasks", zap.Error(err))
-			return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: "Unknown error occurred while listing the tasks"})
+			h.logger.Error(ctx.Context(), "Unknown error occurred while listing the tasks", zap.Error(err))
+			return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: "Unknown error occurred while listing the tasks"})
 		}
 	}
 
-	return c.Status(fiber.StatusOK).JSON(res)
+	return ctx.Status(fiber.StatusOK).JSON(res)
 }
