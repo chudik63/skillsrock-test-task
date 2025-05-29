@@ -12,6 +12,7 @@ services:
       - skillsrock-test-task
     ports:
       - '${HTTP_PORT}:${HTTP_PORT}'
+      
   postgres:
     image: "postgres:15"
     env_file:
