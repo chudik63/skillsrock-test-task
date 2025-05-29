@@ -7,4 +7,5 @@ var (
 	ErrFailedToParseLimit = errors.New("limit number is invalid")
 	ErrFailedToParseID    = errors.New("task id is invalid")
 	ErrNotFound           = errors.New("nothing was found")
+	ErrInvalidStatus      = errors.New("status is invalid")
 )

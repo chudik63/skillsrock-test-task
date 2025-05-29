@@ -9,7 +9,9 @@ import (
 )
 
 const (
-	statusNew = "new"
+	statusNew      = "new"
+	statusProgress = "in_progress"
+	statusDone     = "done"
 )
 
 type TaskRepository interface {
@@ -106,6 +108,10 @@ func (s *TaskService) UpdateTask(ctx context.Context, taskIDStr string, task *dt
 	taskID, err := strconv.ParseUint(taskIDStr, 10, 64)
 	if err != nil {
 		return models.ErrFailedToParseID
+	}
+
+	if task.Status != statusNew && task.Status != statusProgress && task.Status != statusDone {
+		return models.ErrInvalidStatus
 	}
 
 	return s.repo.UpdateTask(ctx, taskID, &models.Task{

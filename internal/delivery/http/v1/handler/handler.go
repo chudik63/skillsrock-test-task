@@ -131,7 +131,7 @@ func (h *Handler) UpdateTask(ctx *fiber.Ctx) error {
 
 	if err := h.service.UpdateTask(ctxWithTimeout, taskID, &task); err != nil {
 		switch {
-		case errors.Is(err, models.ErrFailedToParseID):
+		case errors.Is(err, models.ErrFailedToParseID) || errors.Is(err, models.ErrInvalidStatus):
 			return ctx.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
 		case errors.Is(err, models.ErrNotFound):
 			return ctx.Status(fiber.StatusNotFound).JSON(ErrorResponse{Error: err.Error()})
@@ -141,7 +141,7 @@ func (h *Handler) UpdateTask(ctx *fiber.Ctx) error {
 		}
 	}
 
-	h.logger.Info(ctx.Context(), "Task updated", zap.Uint64("id", task.ID))
+	h.logger.Info(ctx.Context(), "Task updated", zap.String("id", taskID))
 
 	return ctx.SendStatus(fiber.StatusOK)
 }
