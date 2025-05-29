@@ -1,0 +1,34 @@
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - skillsrock-test-task
+    ports:
+      - '${HTTP_PORT}:${HTTP_PORT}'
+  postgres:
+    image: "postgres:15"
+    env_file:
+      - .env
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    networks:
+      - skillsrock-test-task
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  skillsrock-test-task:
+
+volumes:
+  postgres_data:
