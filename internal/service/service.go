@@ -12,7 +12,7 @@ const (
 	statusNew = "new"
 )
 
-type Repository interface {
+type TaskRepository interface {
 	CreateTask(ctx context.Context, task *models.Task) (uint64, error)
 	GetTaskByID(ctx context.Context, id uint64) (*models.Task, error)
 	DeleteTask(ctx context.Context, id uint64) error
@@ -20,17 +20,17 @@ type Repository interface {
 	UpdateTask(ctx context.Context, task *models.Task) error
 }
 
-type Service struct {
-	repo Repository
+type TaskService struct {
+	repo TaskRepository
 }
 
-func New(repo Repository) *Service {
-	return &Service{
+func NewTaskService(repo TaskRepository) *TaskService {
+	return &TaskService{
 		repo: repo,
 	}
 }
 
-func (s *Service) CreateTask(ctx context.Context, task *dto.CreateTaskRequest) (*dto.CreateTaskResponse, error) {
+func (s *TaskService) CreateTask(ctx context.Context, task *dto.CreateTaskRequest) (*dto.CreateTaskResponse, error) {
 	now := time.Now()
 
 	id, err := s.repo.CreateTask(ctx, &models.Task{
@@ -47,7 +47,7 @@ func (s *Service) CreateTask(ctx context.Context, task *dto.CreateTaskRequest) (
 	}, err
 }
 
-func (s *Service) DeleteTask(ctx context.Context, taskIDStr string) error {
+func (s *TaskService) DeleteTask(ctx context.Context, taskIDStr string) error {
 	taskID, err := strconv.ParseUint(taskIDStr, 10, 64)
 	if err != nil {
 		return models.ErrFailedToParseID
@@ -56,7 +56,7 @@ func (s *Service) DeleteTask(ctx context.Context, taskIDStr string) error {
 	return s.repo.DeleteTask(ctx, taskID)
 }
 
-func (s *Service) GetTaskByID(ctx context.Context, taskIDStr string) (*dto.GetTaskByIDResponse, error) {
+func (s *TaskService) GetTaskByID(ctx context.Context, taskIDStr string) (*dto.GetTaskByIDResponse, error) {
 	taskID, err := strconv.ParseUint(taskIDStr, 10, 64)
 	if err != nil {
 		return nil, models.ErrFailedToParseID
@@ -76,7 +76,7 @@ func (s *Service) GetTaskByID(ctx context.Context, taskIDStr string) (*dto.GetTa
 	}, nil
 }
 
-func (s *Service) GetTasks(ctx context.Context, pageStr string, limitStr string) (*dto.GetTasksResponse, error) {
+func (s *TaskService) GetTasks(ctx context.Context, pageStr string, limitStr string) (*dto.GetTasksResponse, error) {
 	page, err := strconv.ParseUint(pageStr, 10, 64)
 	if err != nil && pageStr != "" {
 		return nil, models.ErrFailedToParsePage
@@ -115,7 +115,7 @@ func (s *Service) GetTasks(ctx context.Context, pageStr string, limitStr string)
 	}, nil
 }
 
-func (s *Service) UpdateTask(ctx context.Context, taskIDStr string, task *dto.UpdateTaskRequest) error {
+func (s *TaskService) UpdateTask(ctx context.Context, taskIDStr string, task *dto.UpdateTaskRequest) error {
 	taskID, err := strconv.ParseUint(taskIDStr, 10, 64)
 	if err != nil {
 		return models.ErrFailedToParseID
