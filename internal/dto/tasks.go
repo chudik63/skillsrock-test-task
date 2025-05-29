@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"skillsrock-test-task/internal/models"
+	"time"
+)
 
 type CreateTaskRequest struct {
 	Title       string `json:"title"`
@@ -8,12 +11,9 @@ type CreateTaskRequest struct {
 }
 
 type CreateTaskResponse struct {
-	ID          uint64    `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Status      string    `json:"status"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID        uint64    `json:"id"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type UpdateTaskRequest struct {
@@ -24,14 +24,9 @@ type UpdateTaskRequest struct {
 }
 
 type GetTaskByIDResponse struct {
-	ID          uint64    `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Status      string    `json:"status"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Task models.Task `json:"task"`
 }
 
 type GetTasksResponse struct {
-	Tasks []GetTaskByIDResponse `json:"tasks"`
+	Tasks []models.Task `json:"tasks"`
 }

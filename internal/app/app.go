@@ -8,6 +8,7 @@ import (
 	"skillsrock-test-task/internal/database/postgres"
 	"skillsrock-test-task/internal/delivery/http/v1/handler"
 	"skillsrock-test-task/internal/delivery/routes"
+	"skillsrock-test-task/internal/service"
 	"skillsrock-test-task/pkg/logger"
 	"skillsrock-test-task/pkg/migrator"
 	"syscall"
@@ -43,9 +44,11 @@ func Run() {
 		log.Fatal(ctx, "Failed to run migrations", zap.Error(err))
 	}
 
+	serv := service.New(nil)
+
 	app := fiber.New()
 
-	routes.RegistrateRoutes(app, handler.NewHandler(nil, log))
+	routes.RegistrateRoutes(app, handler.NewHandler(serv, log))
 
 	go func() {
 		if err := app.Listen(":" + cfg.HTTP.Port); err != nil {
