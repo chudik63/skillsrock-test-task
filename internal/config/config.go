@@ -43,7 +43,7 @@ func New() (*Config, error) {
 		cfg Config
 	)
 
-	err = cleanenv.ReadConfig(".env", &cfg)
+	err = cleanenv.ReadEnv(&cfg)
 
 	if cfg == (Config{}) {
 		return nil, ErrEmptyConfig
