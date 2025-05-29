@@ -8,7 +8,7 @@ type CreateTaskRequest struct {
 }
 
 type CreateTaskResponse struct {
-	ID          int64     `json:"id"`
+	ID          uint64    `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Status      string    `json:"status"`
@@ -17,14 +17,14 @@ type CreateTaskResponse struct {
 }
 
 type UpdateTaskRequest struct {
-	ID          int64  `json:"id"`
+	ID          uint64 `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
 }
 
 type GetTaskByIDResponse struct {
-	ID          int64     `json:"id"`
+	ID          uint64    `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Status      string    `json:"status"`

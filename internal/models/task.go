@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Task struct {
-	ID          int64
+	ID          uint64
 	Title       string
 	Description string
 	Status      string
