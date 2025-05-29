@@ -1,0 +1,224 @@
+definitions:
+  internal_delivery_http_v1_handler.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  skillsrock-test-task_internal_dto.CreateTaskRequest:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  skillsrock-test-task_internal_dto.CreateTaskResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+    type: object
+  skillsrock-test-task_internal_dto.GetTaskByIDResponse:
+    properties:
+      task:
+        $ref: '#/definitions/skillsrock-test-task_internal_models.Task'
+    type: object
+  skillsrock-test-task_internal_dto.GetTasksResponse:
+    properties:
+      tasks:
+        items:
+          $ref: '#/definitions/skillsrock-test-task_internal_models.Task'
+        type: array
+    type: object
+  skillsrock-test-task_internal_dto.UpdateTaskRequest:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+    type: object
+  skillsrock-test-task_internal_models.Task:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /tasks:
+    get:
+      description: Retrieves a paginated list of tasks
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: string
+      - description: Items per page
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of tasks
+          schema:
+            $ref: '#/definitions/skillsrock-test-task_internal_dto.GetTasksResponse'
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+        "404":
+          description: No tasks found
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+        "500":
+          description: Unknown error occurred
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+      summary: Get tasks
+      tags:
+      - tasks
+    post:
+      description: Creates a new task
+      parameters:
+      - description: Task
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/skillsrock-test-task_internal_dto.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/skillsrock-test-task_internal_dto.CreateTaskResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+        "500":
+          description: Uknown error occured while creating the task
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+      summary: Create a new task
+      tags:
+      - tasks
+  /tasks/{id}:
+    delete:
+      description: Deletes a task by its ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid task ID
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+        "500":
+          description: Unknown error occurred
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+      summary: Delete a task by ID
+      tags:
+      - tasks
+    get:
+      description: Retrieves a task by its ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task details
+          schema:
+            $ref: '#/definitions/skillsrock-test-task_internal_dto.GetTaskByIDResponse'
+        "400":
+          description: Invalid task ID
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+        "500":
+          description: Unknown error occurred
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+      summary: Get a task by ID
+      tags:
+      - tasks
+    put:
+      consumes:
+      - application/json
+      description: Updates a task's data
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task payload
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/skillsrock-test-task_internal_dto.UpdateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid input or task ID
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+        "500":
+          description: Unknown error occurred
+          schema:
+            $ref: '#/definitions/internal_delivery_http_v1_handler.ErrorResponse'
+      summary: Update a task by ID
+      tags:
+      - tasks
+swagger: "2.0"
