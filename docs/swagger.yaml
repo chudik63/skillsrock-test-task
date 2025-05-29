@@ -1,4 +1,4 @@
-basePath: /
+basePath: /api/v1
 definitions:
   internal_delivery_http_v1_handler.ErrorResponse:
     properties:

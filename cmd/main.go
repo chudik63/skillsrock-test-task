@@ -6,7 +6,7 @@ import (
 
 // @title SkillsRock Test Task
 // @version 1.0
-// @BasePath /
+// @BasePath /api/v1
 // @host localhost:8080
 // @schemes http
 func main() {

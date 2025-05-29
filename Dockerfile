@@ -18,6 +18,7 @@ WORKDIR /root/
 
 COPY --from=build /build/main .
 COPY --from=build /build/.env .env
+COPY --from=build /build/docs ./docs
 COPY --from=build /build/migrations ./migrations
 
 CMD ["./main"]
