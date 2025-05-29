@@ -67,7 +67,7 @@ func Run() {
 	defer shutdown()
 
 	if err = app.ShutdownWithContext(ctx); err != nil {
-		log.Error(ctx, "failed shutting down the server", zap.Error(err))
+		log.Error(ctx, "Failed shutting down the server", zap.Error(err))
 	}
 
 	log.Info(ctx, "Server gracefully stopped")

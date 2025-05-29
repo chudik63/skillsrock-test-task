@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   internal_delivery_http_v1_handler.ErrorResponse:
     properties:
@@ -58,8 +59,11 @@ definitions:
       updated_at:
         type: string
     type: object
+host: localhost:8080
 info:
   contact: {}
+  title: SkillsRock Test Task
+  version: "1.0"
 paths:
   /tasks:
     get:
@@ -221,4 +225,6 @@ paths:
       summary: Update a task by ID
       tags:
       - tasks
+schemes:
+- http
 swagger: "2.0"
