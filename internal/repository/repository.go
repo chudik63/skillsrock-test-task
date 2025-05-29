@@ -120,10 +120,14 @@ func (r *TaskRepository) GetTasks(ctx context.Context, limit, offset uint64) ([]
 		tasks = append(tasks, &task)
 	}
 
+	if len(tasks) == 0 {
+		return nil, models.ErrNotFound
+	}
+
 	return tasks, nil
 }
 
-func (r *TaskRepository) UpdateTask(ctx context.Context, task *models.Task) error {
+func (r *TaskRepository) UpdateTask(ctx context.Context, id uint64, task *models.Task) error {
 	query := r.db.
 		Update("tasks").
 		SetMap(map[string]interface{}{
@@ -132,7 +136,7 @@ func (r *TaskRepository) UpdateTask(ctx context.Context, task *models.Task) erro
 			"status":      task.Status,
 			"updated_at":  task.UpdatedAt,
 		}).
-		Where(sq.Eq{"id": task.ID})
+		Where(sq.Eq{"id": id})
 
 	sql, args, err := query.ToSql()
 	if err != nil {

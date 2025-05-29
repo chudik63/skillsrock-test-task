@@ -24,9 +24,9 @@ type UpdateTaskRequest struct {
 }
 
 type GetTaskByIDResponse struct {
-	Task models.Task `json:"task"`
+	Task *models.Task `json:"task"`
 }
 
 type GetTasksResponse struct {
-	Tasks []models.Task `json:"tasks"`
+	Tasks []*models.Task `json:"tasks"`
 }

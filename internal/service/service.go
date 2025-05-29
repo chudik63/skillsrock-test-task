@@ -17,7 +17,7 @@ type TaskRepository interface {
 	GetTaskByID(ctx context.Context, id uint64) (*models.Task, error)
 	DeleteTask(ctx context.Context, id uint64) error
 	GetTasks(ctx context.Context, limit, offset uint64) ([]*models.Task, error)
-	UpdateTask(ctx context.Context, task *models.Task) error
+	UpdateTask(ctx context.Context, id uint64, task *models.Task) error
 }
 
 type TaskService struct {
@@ -68,11 +68,7 @@ func (s *TaskService) GetTaskByID(ctx context.Context, taskIDStr string) (*dto.G
 	}
 
 	return &dto.GetTaskByIDResponse{
-		Task: models.Task{
-			Title:       task.Title,
-			Description: task.Description,
-			Status:      task.Status,
-		},
+		Task: task,
 	}, nil
 }
 
@@ -101,17 +97,8 @@ func (s *TaskService) GetTasks(ctx context.Context, pageStr string, limitStr str
 		return nil, err
 	}
 
-	tasksDTO := make([]models.Task, len(tasks))
-	for i, task := range tasks {
-		tasksDTO[i] = models.Task{
-			Title:       task.Title,
-			Description: task.Description,
-			Status:      task.Status,
-		}
-	}
-
 	return &dto.GetTasksResponse{
-		Tasks: tasksDTO,
+		Tasks: tasks,
 	}, nil
 }
 
@@ -121,7 +108,7 @@ func (s *TaskService) UpdateTask(ctx context.Context, taskIDStr string, task *dt
 		return models.ErrFailedToParseID
 	}
 
-	return s.repo.UpdateTask(ctx, &models.Task{
+	return s.repo.UpdateTask(ctx, taskID, &models.Task{
 		ID:          taskID,
 		Title:       task.Title,
 		Description: task.Description,
