@@ -50,7 +50,7 @@ func Run() {
 
 	app := fiber.New()
 
-	routes.RegistrateRoutes(app, handler.NewHandler(serv, log))
+	routes.RegistrateRoutes(app, log, handler.NewHandler(serv, log))
 
 	go func() {
 		if err := app.Listen(":" + cfg.HTTP.Port); err != nil {

@@ -25,13 +25,8 @@ type (
 		SSLMode  string `env:"POSTGRES_SSL"`
 	}
 
-	RateLimiterConfig struct {
-		Limit int `env:"LIMIT"`
-	}
-
 	Config struct {
 		HTTP           HTTPConfig
-		RateLimit      RateLimiterConfig
 		Postgres       PostgresConfig
 		MigrationsPath string `env:"MIGRATIONS_PATH"`
 	}
